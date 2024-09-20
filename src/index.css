@@ -1,0 +1,66 @@
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "Fredoka", sans-serif;
+  background-color: var(--bg);
+}
+:root {
+  --icon_color: rgb(155, 155, 155);
+  --blue_color: rgb(70, 144, 255);
+  --active_green_color: rgb(49, 169, 54);
+  --red_color: rgb(254, 93, 54);
+}
+
+.light {
+  --bg: rgb(247, 247, 247);
+  --bg_2: rgb(255, 255, 255);
+  --bg_3: var(--bg_2);
+  --bg_msg: rgb(230, 230, 230);
+  --primary_text: rgb(54, 54, 54);
+  --secondary_text: rgb(147, 153, 165);
+  --clr-scrollbar: rgb(187, 187, 187);
+  transition: all 0.3s;
+}
+
+.dark {
+  --bg: rgb(26, 26, 35);
+  --bg_2: rgb(39, 39, 54);
+  --bg_3: rgb(30, 29, 40);
+  --bg_msg: var(--bg_2);
+  --primary_text: rgb(222, 222, 222);
+  --secondary_text: rgb(133, 133, 133);
+  --clr-scrollbar: rgb(50, 48, 67);
+  transition: all 0.3s;
+}
+
+/* width */
+.my-scroll::-webkit-scrollbar,
+.epr-body::-webkit-scrollbar {
+  width: 8px;
+}
+.hidden-scroll::-webkit-scrollbar {
+  width: 0px;
+}
+
+/* Track */
+.my-scroll::-webkit-scrollbar-track,
+.epr-body::-webkit-scrollbar-track {
+  background: var(--bg_2);
+}
+
+/* Handle */
+.my-scroll::-webkit-scrollbar-thumb,
+.epr-body::-webkit-scrollbar-thumb {
+  background: var(--clr-scrollbar);
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+.my-scroll::-webkit-scrollbar-thumb:hover,
+.epr-body::-webkit-scrollbar-thumb:hover {
+  background: var(--clr-scrollbar);
+}
