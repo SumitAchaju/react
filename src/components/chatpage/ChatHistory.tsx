@@ -13,6 +13,7 @@ import useOnlineUserQuery from "../../queryHooks/useOnlineUserQuery";
 import useChatHistoryQuery from "../../queryHooks/useChatHistoryQuery";
 import { useContext, useEffect, useRef, useState } from "react";
 import AuthContext from "../../context/Auth";
+import { useDebouncedCallback } from "use-debounce";
 
 type Props = {};
 
@@ -26,30 +27,22 @@ export default function ChatHistory({}: Props) {
 
   const historySearchRef = useRef<HTMLInputElement | null>(null);
   const [historyUser, setHistoryUser] = useState<chatHistoryType[]>([]);
-  const handleChatSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const search = e.target.value;
-    setHistoryUser(
-      historyQuery.data?.filter((chat: chatHistoryType) =>
-        (
-          chat.users[0].first_name.toLowerCase() +
-          " " +
-          chat.users[0].last_name.toLowerCase()
-        ).includes(search.toLowerCase())
-      )
+
+  const searchFilter = () =>
+    historyQuery.data?.filter((chat: chatHistoryType) =>
+      (
+        chat.users[0].first_name.toLowerCase() +
+        " " +
+        chat.users[0].last_name.toLowerCase()
+      ).includes((historySearchRef.current?.value ?? "").toLowerCase())
     );
-  };
+
+  const handleChatSearch = useDebouncedCallback(() => {
+    setHistoryUser(searchFilter());
+  }, 1000);
   useEffect(() => {
     if (historyQuery.data) {
-      const search = historySearchRef.current?.value ?? "";
-      setHistoryUser(
-        historyQuery.data?.filter((chat: chatHistoryType) =>
-          (
-            chat.users[0].first_name.toLowerCase() +
-            " " +
-            chat.users[0].last_name.toLowerCase()
-          ).includes(search.toLowerCase())
-        )
-      );
+      setHistoryUser(searchFilter());
     }
   }, [historyQuery.data]);
   return (
@@ -120,7 +113,10 @@ export default function ChatHistory({}: Props) {
               className="rounded-full block py-[10px] ps-12 outline-primary-text outline outline-1 pe-5 w-full text-primary-text placeholder:text-primary-text bg-transparent"
               onChange={handleChatSearch}
               ref={historySearchRef}
-              onBlur={(e) => (e.target.value = "")}
+              onBlur={(e) => {
+                e.currentTarget.value = "";
+                setHistoryUser(searchFilter());
+              }}
             />
             <div className="absolute top-1/2 -translate-y-1/2 left-5">
               <SearchIcon />
@@ -150,6 +146,11 @@ export default function ChatHistory({}: Props) {
                 />
               </div>
             ))}
+            {historyUser.length === 0 && (
+              <div className="text-secondary-text font-semibold text-center text-[18px] px-5">
+                <p className="mt-10">No chat found</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

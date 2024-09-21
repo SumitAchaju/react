@@ -52,7 +52,7 @@ export default function RecentChat({
               : ""}
           </span>
           {myMsg ? (
-            <span className="flex items-center justify-center">
+            <span className="flex items-center justify-end">
               <TickIcon color={msgStatusColor(msgData.status)} />
             </span>
           ) : (

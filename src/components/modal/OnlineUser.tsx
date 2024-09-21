@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { onlineUserType } from "../../types/fetchTypes";
 import Button from "../Button";
 import { SearchIcon } from "../Icons";
 import ProfilePic from "../ProfilePic";
 import MyModal from "./MyModal";
 import { Link } from "react-router-dom";
+import { useDebouncedCallback } from "use-debounce";
 
 type Props = {
   users: onlineUserType[];
@@ -12,6 +13,27 @@ type Props = {
 
 export default function OnlineUser({ users }: Props) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const searchRef = useRef<HTMLInputElement | null>(null);
+
+  const [filterUser, setFilterUser] = useState<onlineUserType[]>(users);
+  const searchFilter = () =>
+    users.filter((user) =>
+      (
+        user.user.first_name.toLowerCase() +
+        " " +
+        user.user.last_name.toLowerCase()
+      ).includes((searchRef.current?.value ?? "").toLowerCase())
+    );
+
+  const handleSearchChange = useDebouncedCallback(() => {
+    setFilterUser(searchFilter());
+  }, 1000);
+
+  useEffect(() => {
+    setFilterUser(searchFilter());
+  }, [users]);
+
   return (
     <MyModal
       trigger={<p className="text-blue-color">See all</p>}
@@ -29,16 +51,22 @@ export default function OnlineUser({ users }: Props) {
               type="text"
               placeholder="Search Chats..."
               className="rounded-[10px] block py-[15px] ps-[55px] border border-secondary-text pe-5 w-full text-primary-text placeholder:text-primary-text bg-transparent"
+              ref={searchRef}
+              onChange={handleSearchChange}
             />
             <div className="absolute top-1/2 -translate-y-1/2 left-[75px]">
               <SearchIcon />
             </div>
-            <button className="bg-red-color rounded-full p-4 block">
+            <button
+              type="button"
+              className="bg-red-color rounded-full p-4 block"
+              onClick={() => setFilterUser(searchFilter())}
+            >
               <SearchIcon color="white" />
             </button>
           </form>
           <div className="flex flex-col overflow-y-auto my-scroll grow gap-[20px] px-[50px] w-full">
-            {users.map((user: onlineUserType) => (
+            {filterUser.map((user: onlineUserType) => (
               <div
                 key={user.user.id}
                 className="flex justify-between items-center w-full"
@@ -63,6 +91,13 @@ export default function OnlineUser({ users }: Props) {
                 </Link>
               </div>
             ))}
+            {filterUser.length === 0 && (
+              <div className="flex justify-center items-center w-full">
+                <p className="text-secondary-text font-medium text-[20px] mt-10">
+                  No User Found
+                </p>
+              </div>
+            )}
           </div>
         </div>
       }

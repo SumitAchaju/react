@@ -1,19 +1,14 @@
 import { ArrowIcon, BlockIocn, CrossIcon, HelpIcon, MuteIcon } from "../Icons";
 import Profile from "../modal/Profile";
 import ProfilePic from "../ProfilePic";
-import { useParams } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
-import { userType } from "../../types/fetchTypes";
+import useRoomFriendQuery from "../../queryHooks/useRoomFriendQuery";
 
-type Props = {};
+type Props = {
+  friendUsers: ReturnType<typeof useRoomFriendQuery>;
+  setIsChatInfoOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-export default function ChatInfo({}: Props) {
-  const { roomId } = useParams<{ roomId: string }>();
-  const queryClient = useQueryClient();
-  const roomFriend = queryClient.getQueryData<userType>([
-    "roomFriends",
-    roomId,
-  ]);
+export default function ChatInfo({ friendUsers, setIsChatInfoOpen }: Props) {
   return (
     <div className="flex flex-col h-full gap-[40px] bg-third">
       <div className="flex px-[40px] min-h-[92px] bg-second items-center justify-between">
@@ -25,18 +20,25 @@ export default function ChatInfo({}: Props) {
             Chat Info
           </h2>
         </div>
-        <div>
+        <div
+          onClick={() => setIsChatInfoOpen((prev) => !prev)}
+          className="cursor-pointer"
+        >
           <CrossIcon color="var(--red_color)" />
         </div>
       </div>
       <div className="flex flex-col gap-4 items-center justify-center">
-        <ProfilePic image={roomFriend?.profile} size={80} circle={false} />
+        <ProfilePic
+          image={friendUsers.data?.profile}
+          size={80}
+          circle={false}
+        />
         <p className="text-primary-text text-[22px] tracking-wide">
-          {roomFriend?.first_name} {roomFriend?.last_name}
+          {friendUsers.data?.first_name} {friendUsers.data?.last_name}
         </p>
       </div>
       <div className="flex gap-[40px] items-center justify-center">
-        <Profile />
+        <Profile userInfo={friendUsers.data} />
         <div className="text-center">
           <div className="rounded-[50%] bg-main me-auto flex items-center justify-center mb-2 w-[50px] h-[50px]">
             <MuteIcon />

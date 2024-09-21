@@ -4,7 +4,7 @@ import ProfilePic from "./ProfilePic";
 
 type Props = {
   inViewRef?: (node?: Element | null) => void;
-  img: string;
+  img: string | undefined;
   type: "sent" | "recieved";
   msg: processMsgType["message"];
   lastMsg: {

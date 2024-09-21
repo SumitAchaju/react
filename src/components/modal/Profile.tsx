@@ -2,10 +2,13 @@ import { useState } from "react";
 import { UserIcon } from "../Icons";
 import ProfilePic from "../ProfilePic";
 import MyModal from "./MyModal";
+import { userType } from "../../types/fetchTypes";
 
-type Props = {};
+type Props = {
+  userInfo: userType | undefined;
+};
 
-export default function Profile({}: Props) {
+export default function Profile({ userInfo }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -21,17 +24,26 @@ export default function Profile({}: Props) {
       isOpen={isOpen}
       setIsOpen={setIsOpen}
       modal={
-        <div className="p-[50px] flex flex-col gap-[20px] h-full">
-          <div className="text-center">
-            <h2 className="text-primary-text text-[20px] font-medium">
-              Profile
-            </h2>
-          </div>
-          <div className="flex flex-col items-center justify-center gap-5">
-            <ProfilePic image="/src/assets/png/profile.png" size={150} />
-            <p className="text-primary-text text-[35px] font-medium">
-              Sumit Achaju
-            </p>
+        <div className="p-[50px] flex flex-col w-full gap-[20px] h-full">
+          <div className="flex">
+            <div className="flex flex-col gap-5 text-primary-text items-center w-full font-medium text-xl">
+              <h2 className="text-3xl">Profile</h2>
+              <ProfilePic
+                className="mb-5"
+                image={userInfo?.profile}
+                size={120}
+                circle={false}
+              />
+              <p>
+                Name: {userInfo?.first_name} {userInfo?.last_name}
+              </p>
+              <p>Email: {userInfo?.email}</p>
+              <p>Address: {userInfo?.address}</p>
+              <p>
+                Phone Number: +{userInfo?.contact_number_country_code}{" "}
+                {userInfo?.contact_number}
+              </p>
+            </div>
           </div>
         </div>
       }
