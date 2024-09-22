@@ -24,8 +24,8 @@ export default function RecentChat({
   const msgData = useMemo(() => initilizeMsg(message), [message]);
   const context = useContext(AuthContext);
   const myMsg = useMemo(
-    () => msgData.sender_id === context?.user.id,
-    [msgData, context?.user.id]
+    () => msgData.sender_id === context?.user?.id,
+    [msgData, context?.user?.id]
   );
   return (
     <div className="flex items-center gap-2">

@@ -18,6 +18,12 @@ export type userType = {
   contact_number_country_code: number;
   contact_number: number;
   username: string;
+  blocked_user?: userType[];
+  blocked_by?: userType[];
+  friend?: userType[];
+  friend_by?: userType[];
+  requested_user?: userType[];
+  requested_by?: userType[];
 };
 
 export type onlineUserType = {

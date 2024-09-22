@@ -142,12 +142,12 @@ export default function MainChatBox({}: Props) {
                       <Message
                         inViewRef={index === 0 ? ref : undefined}
                         img={
-                          m.sender_id == context?.user.id
+                          m.sender_id == context?.user?.id
                             ? context?.user.profile
                             : friendUsers.data?.profile
                         }
                         type={
-                          m.sender_id == context?.user.id ? "sent" : "recieved"
+                          m.sender_id == context?.user?.id ? "sent" : "recieved"
                         }
                         msg={m.message}
                         lastMsg={lastStatusMsg}
@@ -168,7 +168,7 @@ export default function MainChatBox({}: Props) {
           <MessageBox
             isActive={roomQuery.data?.is_active}
             handleMsgSend={(e) =>
-              sendMsg(e, roomSocket, roomId, context?.user.id)
+              sendMsg(e, roomSocket, roomId, context?.user?.id)
             }
           />
         </div>

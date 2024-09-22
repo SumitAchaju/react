@@ -137,7 +137,7 @@ const AddFriendModal = () => {
                     </span>
                   </div>
                 </div>
-                {context?.user.id == user.id ? (
+                {context?.user?.id == user.id ? (
                   <Button varient="secondary" text="MyProfile" />
                 ) : (
                   <Button

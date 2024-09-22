@@ -19,7 +19,7 @@ export default function useMsgSeenEffect(
       chatMessages?.pages.flat(),
       "seen"
     );
-    if (senderIdList.size === 1 && senderIdList.has(context?.user.id || 0))
+    if (senderIdList.size === 1 && senderIdList.has(context?.user?.id || 0))
       return;
     if (unSeenMsg.length === 0) return;
     if (roomSocket.readyState === roomSocket.CONNECTING) return;
@@ -28,7 +28,7 @@ export default function useMsgSeenEffect(
       JSON.stringify(
         statusChangeWebsocketMsg({
           room_id: roomId,
-          sender_id: context?.user.id,
+          sender_id: context?.user?.id,
           messages: unSeenMsg,
           status: "seen",
         })

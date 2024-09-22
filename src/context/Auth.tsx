@@ -10,7 +10,7 @@ type Props = {
 type contextType = {
   loginStatus: boolean;
   setLoginStatus: React.Dispatch<React.SetStateAction<boolean>>;
-  user: userType;
+  user: userType | undefined;
 };
 
 const AuthContext = createContext<contextType | null>(null);
@@ -22,7 +22,7 @@ export function AuthProvider({ children }: Props) {
     localStorage.getItem("access") ? true : false
   );
 
-  const { data, isFetched } = useQuery({
+  const { data } = useQuery<userType>({
     queryKey: ["getUser"],
     queryFn: () => api.get("/getuser/").then((res) => res.data),
     enabled: loginStatus,
@@ -35,8 +35,6 @@ export function AuthProvider({ children }: Props) {
     user: data,
   };
   return (
-    <AuthContext.Provider value={context}>
-      {isFetched || !loginStatus ? children : null}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={context}>{children}</AuthContext.Provider>
   );
 }

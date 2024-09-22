@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { useMutateChatHistoryQuery } from "../queryHooks/useChatHistoryQuery";
+import { useChatHistoryQueryMutation } from "../queryHooks/useChatHistoryQuery";
 
 export default function useMainWebsocket() {
   const socket = useMemo(() => new WebSocket("ws://localhost/ws/"), []);
   const [isConnected, setIsConnected] = useState(false);
 
-  const { updateHistoryData } = useMutateChatHistoryQuery();
+  const { updateHistoryData } = useChatHistoryQueryMutation();
 
   useEffect(() => {
     socket.onmessage = (event: MessageEvent<any>) => {

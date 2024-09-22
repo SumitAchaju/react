@@ -2,6 +2,12 @@ import { ArrowIcon, BlockIocn, CrossIcon, HelpIcon, MuteIcon } from "../Icons";
 import Profile from "../modal/Profile";
 import ProfilePic from "../ProfilePic";
 import useRoomFriendQuery from "../../queryHooks/useRoomFriendQuery";
+import useBlockUserMutation, {
+  useUnBlockUserMutation,
+} from "../../queryHooks/useBlockUserMutation";
+import { notifyPromise } from "../toast/MsgToast";
+import { useContext, useMemo } from "react";
+import AuthContext from "../../context/Auth";
 
 type Props = {
   friendUsers: ReturnType<typeof useRoomFriendQuery>;
@@ -9,6 +15,16 @@ type Props = {
 };
 
 export default function ChatInfo({ friendUsers, setIsChatInfoOpen }: Props) {
+  const blockUserMutation = useBlockUserMutation();
+  const unBlockUserMutation = useUnBlockUserMutation();
+  const context = useContext(AuthContext);
+  const isBlocked = useMemo(
+    () =>
+      context?.user?.blocked_user?.find(
+        (user) => user.id === friendUsers.data?.id
+      ) !== undefined,
+    [friendUsers.data?.id, context?.user?.blocked_user]
+  );
   return (
     <div className="flex flex-col h-full gap-[40px] bg-third">
       <div className="flex px-[40px] min-h-[92px] bg-second items-center justify-between">
@@ -46,10 +62,26 @@ export default function ChatInfo({ friendUsers, setIsChatInfoOpen }: Props) {
           <span className="text-primary-text">Mute</span>
         </div>
         <div className="text-center">
-          <div className="rounded-[50%] bg-main me-auto flex items-center justify-center mb-2 w-[50px] h-[50px]">
-            <BlockIocn />
+          <div
+            className={
+              "rounded-[50%] bg-main me-auto flex items-center justify-center mb-2 w-[50px] h-[50px] cursor-pointer " +
+              (isBlocked ? "bg-red-color" : "")
+            }
+            onClick={() => {
+              notifyPromise({
+                promise: isBlocked
+                  ? unBlockUserMutation.mutateAsync(friendUsers.data?.id ?? 0)
+                  : blockUserMutation.mutateAsync(friendUsers.data?.id ?? 0),
+                msg: isBlocked ? "User Unblocked" : "User Blocked",
+                loading: isBlocked ? "Unblocking user" : "Blocking User",
+              });
+            }}
+          >
+            <BlockIocn color={isBlocked ? "white" : "var(--icon_color)"} />
           </div>
-          <span className="text-primary-text">Block</span>
+          <span className="text-primary-text">
+            {isBlocked ? "Unblock" : "Block"}
+          </span>
         </div>
       </div>
       <div>

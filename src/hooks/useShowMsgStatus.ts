@@ -12,13 +12,13 @@ export default function useShowMsgStatus(
   for (const msg of structuredClone(msgData)?.reverse() ?? []) {
     if (
       msg.message[msg.message.length - 1].status === "seen" &&
-      context?.user.id === msg.sender_id
+      context?.user?.id === msg.sender_id
     ) {
       copiedMsgData.push(msg);
 
       break;
     }
-    if (msg.sender_id === context?.user.id) {
+    if (msg.sender_id === context?.user?.id) {
       copiedMsgData.push(msg);
     }
   }
