@@ -7,19 +7,23 @@ type Props = {};
 type theme = "system" | "dark" | "light";
 
 export default function Apperance({}: Props) {
-  const [activeState, setActiveState] = useState<theme>("system");
+  const [activeState, setActiveState] = useState<theme>(
+    () => (localStorage.getItem("theme") as theme) || "system"
+  );
   const isDarkSystemTheme = useThemeDetector();
 
-  function activateSystemTheme(theme: "system") {
-    setActiveState(theme);
+  function activateSystemTheme() {
+    setActiveState("system");
     document.body.classList.remove("dark", "light");
     document.body.classList.add(isDarkSystemTheme ? "dark" : "light");
+    localStorage.setItem("theme", "system");
   }
 
   function activateTheme(theme: theme) {
     setActiveState(theme);
     document.body.classList.remove("dark", "light");
     document.body.classList.add(theme);
+    localStorage.setItem("theme", theme);
   }
   return (
     <div className="flex flex-col gap-5 px-5">
@@ -33,7 +37,7 @@ export default function Apperance({}: Props) {
             <Switch
               state={activeState == "system" && true}
               disable={activeState == "system" && true}
-              onClick={() => activateSystemTheme("system")}
+              onClick={() => activateSystemTheme()}
             />
           </div>
           <div className="flex items-center justify-between">

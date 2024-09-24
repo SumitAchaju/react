@@ -1,4 +1,6 @@
-import notify from "../components/toast/MsgToast";
+import { useContext } from "react";
+import notify, { notifyMsg } from "../components/toast/MsgToast";
+import AuthContext from "../context/Auth";
 import { useChatHistoryQueryMutation } from "../queryHooks/useChatHistoryQuery";
 import { useMsgQueryMutation } from "../queryHooks/useMsgQuery";
 import { useNotificationMutation } from "../queryHooks/useNotificationQuery";
@@ -13,6 +15,7 @@ export default function useOnMessage(type: "main" | "room") {
     useChatHistoryQueryMutation();
   const { updateMsg, updateMsgStatus } = useMsgQueryMutation();
   const { notificationUpdate } = useNotificationMutation();
+  const context = useContext(AuthContext);
 
   const onMessage = (msg: websocketMsgType, socket: WebSocket) => {
     console.log(msg);
@@ -20,6 +23,10 @@ export default function useOnMessage(type: "main" | "room") {
       const msgData = msg.msg[0];
       updateHistoryData(msgData);
       updateMsg(msgData);
+
+      if (context?.user?.id !== msg.sender_user?.id) {
+        notifyMsg(msgData.message_text, msg.sender_user);
+      }
 
       if (type === "main") {
         socket.send(
@@ -29,6 +36,7 @@ export default function useOnMessage(type: "main" | "room") {
               sender_id: msgData.sender_id,
               messages: [msgData],
               status: "delivered",
+              sender_user: context?.user,
             }),
             reciever_id: msgData.sender_id,
           })
@@ -44,7 +52,7 @@ export default function useOnMessage(type: "main" | "room") {
     notificationUpdate(notification.msg);
     notify(
       "info",
-      `${notification.msg.user.first_name} ${notification.msg.user.last_name} has send you a friend request`
+      `${notification.sender_user?.first_name} ${notification.sender_user?.last_name} has send you a friend request`
     );
   };
   return { onMessage, onNotification };

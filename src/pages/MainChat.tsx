@@ -17,7 +17,7 @@ export default function MainChat({}: Props) {
 
   return (
     <div className="flex h-screen">
-      <div className="w-[400px] bg-second h-full">
+      <div className="w-[400px] shrink-0 bg-second h-full">
         <ChatHistory />
       </div>
       <MainChatBox />

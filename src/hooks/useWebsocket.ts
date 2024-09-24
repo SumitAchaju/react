@@ -19,10 +19,6 @@ export default function useWebsocket(
   );
 
   useEffect(() => {
-    roomSocket.onmessage = (event: MessageEvent<any>) => {
-      const msg = JSON.parse(JSON.parse(event.data));
-      handleMsg(msg, roomSocket);
-    };
     roomSocket.onopen = () => {
       const token = localStorage.getItem("access");
       roomSocket.send(token ? token : "invalid");
@@ -33,6 +29,13 @@ export default function useWebsocket(
       setIsConnected(false);
     };
   }, [url]);
+
+  useEffect(() => {
+    roomSocket.onmessage = (event: MessageEvent<any>) => {
+      const msg = JSON.parse(JSON.parse(event.data));
+      handleMsg(msg, roomSocket);
+    };
+  }, [handleMsg, url]);
 
   return { isConnected, setIsConnected, roomSocket };
 }

@@ -67,6 +67,7 @@ export function useAddFriendMutation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [KEY] });
+      queryClient.invalidateQueries({ queryKey: ["getUser"] });
     },
   });
 

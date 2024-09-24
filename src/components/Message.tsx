@@ -42,19 +42,22 @@ export default function Message({ inViewRef, img, type, msg, lastMsg }: Props) {
           >
             <p
               key={m.created_at}
-              className={`${msgColor} ${msgStyle[i]} py-4 px-6 w-fit text-[17px] font-normal`}
+              className={`${msgColor} ${msgStyle[i]}  break-all break-words whitespace-normal py-4 px-6 w-fit text-[17px] font-normal`}
             >
               {m.message_text}
             </p>
-            {lastMsg.lastSeen?.id === m.id ||
-            lastMsg.lastDelivered?.id === m.id ||
-            lastMsg.lastSent?.id === m.id ? (
-              <div className="shrink-0">
-                <TickIcon color={msgStatusColor(m.status)} />
-              </div>
-            ) : (
-              ""
-            )}
+
+            <div
+              className={`shrink-0 ${
+                lastMsg.lastSeen?.id === m.id ||
+                lastMsg.lastDelivered?.id === m.id ||
+                lastMsg.lastSent?.id === m.id
+                  ? ""
+                  : "invisible"
+              }`}
+            >
+              <TickIcon color={msgStatusColor(m.status)} />
+            </div>
           </div>
         ))}
       </div>

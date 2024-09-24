@@ -7,7 +7,7 @@ export default function useBlockUserMutation() {
   const blockUser = useMutation({
     mutationKey: ["blockUser"],
     mutationFn: async (userId: number) => {
-      const res = await api.get(`/account/block/${userId}/`);
+      const res = await api.get(`/account/block/${userId}`);
       return res.data;
     },
     onSuccess: () => {
@@ -24,7 +24,7 @@ export function useUnBlockUserMutation() {
   const unBlockUser = useMutation({
     mutationKey: ["unBlockUser"],
     mutationFn: async (userId: number) => {
-      const res = await api.get(`/account/unblock/${userId}/`);
+      const res = await api.get(`/account/unblock/${userId}`);
       return res.data;
     },
     onSuccess: () => {

@@ -1,11 +1,13 @@
 import { FormEvent } from "react";
 import newWebsocketMsg from "../utils/websocketMsg";
+import { userType } from "../types/fetchTypes";
 
 export default function sendMsg(
   e: FormEvent<HTMLFormElement>,
   roomSocket: WebSocket,
   roomId: string | undefined,
-  senderId: number | undefined
+  senderId: number | undefined,
+  senderUser: userType | undefined
 ) {
   e.preventDefault();
   const msg = e.currentTarget.messageBox;
@@ -21,6 +23,7 @@ export default function sendMsg(
         room_id: roomId,
         sender_id: senderId,
         message_text: msgValue,
+        sender_user: senderUser,
       })
     )
   );

@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { PhoneIcon, SearchIcon, ThreeDotIcon } from "../Icons";
 import Message from "../Message";
 import MessageBox from "../MessageBox";
@@ -59,6 +59,13 @@ export default function MainChatBox({}: Props) {
   }, [inView]);
 
   let prevDate: string;
+
+  useEffect(() => {
+    if (roomId) {
+      if (roomQuery.data && !roomQuery.isFetching)
+        localStorage.setItem("roomId", roomId);
+    }
+  }, [roomId, roomQuery.isFetching]);
 
   return (
     <div className="bg-main grow h-full flex ">
@@ -168,7 +175,7 @@ export default function MainChatBox({}: Props) {
           <MessageBox
             isActive={roomQuery.data?.is_active}
             handleMsgSend={(e) =>
-              sendMsg(e, roomSocket, roomId, context?.user?.id)
+              sendMsg(e, roomSocket, roomId, context?.user?.id, context?.user)
             }
           />
         </div>

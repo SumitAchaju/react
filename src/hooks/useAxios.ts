@@ -2,10 +2,13 @@ import axios from "axios";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 
 import { jwtDecode } from "jwt-decode";
+import { useContext } from "react";
+import AuthContext from "../context/Auth";
 
 const BaseUrl = "http://localhost";
 
 export default function useAxios() {
+  const context = useContext(AuthContext);
   const instance = axios.create({
     baseURL: BaseUrl,
     headers: {
@@ -19,6 +22,10 @@ export default function useAxios() {
 
       if (checkTokenExpire(token)) {
         const newToken = await getRefreshToken(localStorage.getItem("refresh"));
+        if (newToken === "token expired") {
+          context?.setLoginStatus(false);
+          return config;
+        }
         localStorage.setItem("access", newToken.access_token);
         localStorage.setItem("refresh", newToken.refresh_token);
         token = newToken.access_token;
@@ -47,6 +54,9 @@ async function getRefreshToken(refreshToken: string | null) {
   const token = await axios.post(BaseUrl + "/auth/token/refresh/", {
     token: refreshToken,
   });
+  if (token.status !== 200) {
+    return "token expired";
+  }
   return token.data;
 }
 

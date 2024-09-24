@@ -31,6 +31,7 @@ export default function useMsgSeenEffect(
           sender_id: context?.user?.id,
           messages: unSeenMsg,
           status: "seen",
+          sender_user: context?.user,
         })
       )
     );

@@ -2,6 +2,7 @@ import { useContext, FormEvent, useEffect } from "react";
 import AuthContext from "../context/Auth";
 import { Link, useNavigate } from "react-router-dom";
 import useAxios from "../hooks/useAxios";
+import { notifyPromise } from "../components/toast/MsgToast";
 
 type Props = {};
 
@@ -16,19 +17,24 @@ export default function Login({}: Props) {
       username: e.currentTarget.username.value,
       password: e.currentTarget.password.value,
     };
-    api
-      .post("/auth/token/", formData)
-      .then((res) => {
-        if (res.status === 200) {
-          localStorage.setItem("access", res.data.access_token);
-          localStorage.setItem("refresh", res.data.refresh_token);
-          context?.setLoginStatus(true);
-          navigate("/");
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    const login = async () => {
+      const res = await api.post("/auth/token/", formData);
+      if (res.status !== 200) {
+        Promise.reject(res);
+        return;
+      }
+      localStorage.setItem("access", res.data.access_token);
+      localStorage.setItem("refresh", res.data.refresh_token);
+      localStorage.setItem("roomId", "new");
+      context?.setLoginStatus(true);
+
+      navigate("/");
+    };
+    notifyPromise({
+      promise: login(),
+      msg: "Login Success",
+      loading: "Logging in...",
+    });
   }
 
   useEffect(() => {

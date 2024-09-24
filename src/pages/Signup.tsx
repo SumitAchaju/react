@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { extractDataForm } from "../utils/extractData";
 import { userType } from "../types/fetchTypes";
 import useAxios from "../hooks/useAxios";
+import { notifyPromise } from "../components/toast/MsgToast";
 
 type Props = {};
 
@@ -15,19 +16,22 @@ export default function Signup({}: Props) {
   function handleSignUp(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     let data: userType = extractDataForm(e);
-    api
-      .post("/account/createuser/", data)
-      .then((res) => {
-        if (res.status === 201) {
-          localStorage.setItem("access", res.data.access_token);
-          localStorage.setItem("refresh", res.data.refresh_token);
-          context?.setLoginStatus(true);
-          navigate("/");
-        }
-      })
-      .catch((error) => {
-        console.log(error.response.data.detail);
-      });
+    const register = async () => {
+      const res = await api.post("/account/createuser/", data);
+      if (res.status !== 201) {
+        Promise.reject(res);
+        return;
+      }
+      localStorage.setItem("access", res.data.access_token);
+      localStorage.setItem("refresh", res.data.refresh_token);
+      context?.setLoginStatus(true);
+      navigate("/");
+    };
+    notifyPromise({
+      promise: register(),
+      msg: "Signup Success",
+      loading: "Signing up...",
+    });
   }
   useEffect(() => {
     if (context?.loginStatus) {

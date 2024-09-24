@@ -79,9 +79,7 @@ export default function ChatInfo({ friendUsers, setIsChatInfoOpen }: Props) {
           >
             <BlockIocn color={isBlocked ? "white" : "var(--icon_color)"} />
           </div>
-          <span className="text-primary-text">
-            {isBlocked ? "Unblock" : "Block"}
-          </span>
+          <span className="text-primary-text">Block</span>
         </div>
       </div>
       <div>

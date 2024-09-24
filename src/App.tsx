@@ -4,10 +4,8 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
 } from "react-router-dom";
-import Chat from "./pages/Chat";
 import { AuthProvider } from "./context/Auth";
 import Login from "./pages/Login";
-import Home from "./pages/Home";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Signup from "./pages/Signup";
@@ -17,6 +15,7 @@ import { useEffect } from "react";
 import useThemeDetector from "./hooks/themeDetector";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "react-hot-toast";
+import RedirectRoute from "./pages/RedirectRoute";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,13 +29,12 @@ const queryClient = new QueryClient({
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path="/" element={<ProtectedRoute />}>
-        <Route index element={<Home />} />
-        <Route path="chat/:id" element={<Chat />} />
-        <Route path="main/:roomId" element={<MainChat />}></Route>
+      <Route path="/main/:roomId" element={<ProtectedRoute />}>
+        <Route index element={<MainChat />}></Route>
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/*" element={<RedirectRoute />} />
     </>
   )
 );
@@ -44,7 +42,15 @@ const router = createBrowserRouter(
 function App() {
   const isDarkTheme = useThemeDetector();
   useEffect(() => {
-    document.body.classList.add(isDarkTheme ? "dark" : "light");
+    const theme = localStorage.getItem("theme");
+    if (theme) {
+      document.body.classList.add(
+        theme === "system" ? (isDarkTheme ? "dark" : "light") : theme
+      );
+    } else {
+      localStorage.setItem("theme", "system");
+      document.body.classList.add(isDarkTheme ? "dark" : "light");
+    }
   }, []);
   return (
     <QueryClientProvider client={queryClient}>

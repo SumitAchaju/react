@@ -75,9 +75,11 @@ export type messageType = {
 export type websocketMsgType = {
   msg_type: "new_msg" | "change_msg_status";
   msg: messageType[];
+  sender_user: userType | undefined;
 };
 
 export type websocketNotificationType = {
   msg_type: "notification";
   msg: notificationType;
+  sender_user: userType | undefined;
 };
