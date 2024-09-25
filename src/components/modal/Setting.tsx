@@ -59,6 +59,7 @@ export default function Setting({}: Props) {
     if (!confirm("Are you sure you want to logout?")) return;
     localStorage.removeItem("refresh");
     localStorage.removeItem("access");
+    localStorage.removeItem("roomId");
     context?.setLoginStatus(false);
   };
   return (

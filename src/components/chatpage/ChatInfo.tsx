@@ -50,7 +50,9 @@ export default function ChatInfo({ friendUsers, setIsChatInfoOpen }: Props) {
           circle={false}
         />
         <p className="text-primary-text text-[22px] tracking-wide">
-          {friendUsers.data?.first_name} {friendUsers.data?.last_name}
+          {friendUsers?.data?.first_name === undefined
+            ? "Account Deleted"
+            : friendUsers?.data.first_name + " " + friendUsers?.data?.last_name}
         </p>
       </div>
       <div className="flex gap-[40px] items-center justify-center">

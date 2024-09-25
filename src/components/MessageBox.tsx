@@ -7,10 +7,11 @@ import {
   SendIcon,
 } from "./Icons";
 import { useParams } from "react-router-dom";
-import { Theme, EmojiStyle } from "emoji-picker-react";
 
 const EmojiPicker = lazy(() => import("emoji-picker-react"));
-
+enum Theme {
+  DARK = "dark",
+}
 type Props = {
   isActive: boolean;
   handleMsgSend: (e: FormEvent<HTMLFormElement>) => void;
@@ -105,7 +106,6 @@ function MessageBox({ isActive, handleMsgSend }: Props) {
             }
             handleChangeBox();
           }}
-          emojiStyle={EmojiStyle.FACEBOOK}
         />
       </Suspense>
       <input

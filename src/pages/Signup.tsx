@@ -17,7 +17,7 @@ export default function Signup({}: Props) {
     e.preventDefault();
     let data: userType = extractDataForm(e);
     const register = async () => {
-      const res = await api.post("/account/createuser/", data);
+      const res = await api.post("/account/createuser", data);
       if (res.status !== 201) {
         Promise.reject(res);
         return;
@@ -41,19 +41,21 @@ export default function Signup({}: Props) {
   return (
     <div className="w-full flex items-center justify-center">
       <div className="w-[800px] mt-10">
-        <h1 className="text-center text-3xl font-semibold mb-5">Signup</h1>
+        <h1 className="text-center text-3xl font-semibold mb-5 text-primary-text">
+          Signup
+        </h1>
         <form onSubmit={handleSignUp}>
           <div className="flex gap-10 justify-between">
             <div className="grow">
               <div className="my-5">
                 <label
-                  className="block font-semibold mb-2 text-xl"
+                  className="block font-semibold mb-2 text-xl text-primary-text"
                   htmlFor="fname"
                 >
                   First Name:
                 </label>
                 <input
-                  className="p-4 text-xl block w-full border-2 border-black rounded-xl"
+                  className="p-4 text-xl block w-full bg-main text-primary-text border-2 border-icon-color rounded-xl"
                   type="text"
                   name="first_name"
                   id="fname"
@@ -62,13 +64,13 @@ export default function Signup({}: Props) {
               </div>
               <div className="my-5">
                 <label
-                  className="block font-semibold mb-2 text-xl"
+                  className="block font-semibold mb-2 text-xl text-primary-text"
                   htmlFor="lname"
                 >
                   Last Name:
                 </label>
                 <input
-                  className="p-4 text-xl block w-full border-2 border-black rounded-xl"
+                  className="p-4 text-xl block w-full bg-main text-primary-text border-2 border-icon-color rounded-xl"
                   type="text"
                   name="last_name"
                   id="lname"
@@ -77,13 +79,13 @@ export default function Signup({}: Props) {
               </div>
               <div className="my-5">
                 <label
-                  className="block font-semibold mb-2 text-xl"
+                  className="block font-semibold mb-2 text-xl text-primary-text"
                   htmlFor="email"
                 >
                   Email:
                 </label>
                 <input
-                  className="p-4 text-xl block w-full border-2 border-black rounded-xl"
+                  className="p-4 text-xl block w-full bg-main text-primary-text border-2 border-icon-color rounded-xl"
                   type="email"
                   name="email"
                   id="email"
@@ -92,13 +94,13 @@ export default function Signup({}: Props) {
               </div>
               <div className="my-5">
                 <label
-                  className="block font-semibold mb-2 text-xl"
+                  className="block font-semibold mb-2 text-xl text-primary-text"
                   htmlFor="address"
                 >
                   Address:
                 </label>
                 <input
-                  className="p-4 text-xl block w-full border-2 border-black rounded-xl"
+                  className="p-4 text-xl block w-full bg-main text-primary-text border-2 border-icon-color rounded-xl"
                   type="text"
                   name="address"
                   id="address"
@@ -107,13 +109,13 @@ export default function Signup({}: Props) {
               </div>
               <div className="my-5">
                 <label
-                  className="block font-semibold mb-2 text-xl"
+                  className="block font-semibold mb-2 text-xl text-primary-text"
                   htmlFor="pcode"
                 >
                   Country Code:
                 </label>
                 <input
-                  className="p-4 text-xl block w-full border-2 border-black rounded-xl"
+                  className="p-4 text-xl block w-full bg-main text-primary-text border-2 border-icon-color rounded-xl"
                   type="number"
                   name="contact_number_country_code"
                   id="pcode"
@@ -124,13 +126,13 @@ export default function Signup({}: Props) {
             <div className="grow">
               <div className="my-5">
                 <label
-                  className="block font-semibold mb-2 text-xl"
+                  className="block font-semibold mb-2 text-xl text-primary-text"
                   htmlFor="pnumber"
                 >
                   Contact Number:
                 </label>
                 <input
-                  className="p-4 text-xl block w-full border-2 border-black rounded-xl"
+                  className="p-4 text-xl block w-full bg-main text-primary-text border-2 border-icon-color rounded-xl"
                   type="number"
                   name="contact_number"
                   id="pnumber"
@@ -139,13 +141,13 @@ export default function Signup({}: Props) {
               </div>
               <div className="my-5">
                 <label
-                  className="block font-semibold mb-2 text-xl"
+                  className="block font-semibold mb-2 text-xl text-primary-text"
                   htmlFor="username"
                 >
                   Username:
                 </label>
                 <input
-                  className="p-4 text-xl block w-full border-2 border-black rounded-xl"
+                  className="p-4 text-xl block w-full bg-main text-primary-text border-2 border-icon-color rounded-xl"
                   type="text"
                   name="username"
                   id="username"
@@ -154,13 +156,13 @@ export default function Signup({}: Props) {
               </div>
               <div className="my-5">
                 <label
-                  className="block font-semibold mb-2 text-xl"
+                  className="block font-semibold mb-2 text-xl text-primary-text"
                   htmlFor="password"
                 >
                   Password:
                 </label>
                 <input
-                  className="p-4 text-xl block w-full border-2 border-black rounded-xl"
+                  className="p-4 text-xl block w-full bg-main text-primary-text border-2 border-icon-color rounded-xl"
                   type="password"
                   name="password"
                   id="password"
@@ -169,13 +171,13 @@ export default function Signup({}: Props) {
               </div>
               <div className="my-5">
                 <label
-                  className="block font-semibold mb-2 text-xl"
+                  className="block font-semibold mb-2 text-xl text-primary-text"
                   htmlFor="superpass"
                 >
                   Super Password:
                 </label>
                 <input
-                  className="p-4 text-xl block w-full border-2 border-black rounded-xl"
+                  className="p-4 text-xl block w-full bg-main text-primary-text border-2 border-icon-color rounded-xl"
                   type="password"
                   name="superuser_pass"
                   id="superpass"
@@ -190,7 +192,7 @@ export default function Signup({}: Props) {
                 </button>
               </div>
               <div className="text-center mt-10">
-                <p className="text-xl">
+                <p className="text-xl text-primary-text">
                   Already have account yet?{" "}
                   <Link className="text-blue-600 font-medium" to={"/login"}>
                     Login

@@ -31,9 +31,9 @@ export default function ChatHistory({}: Props) {
   const searchFilter = () =>
     historyQuery.data?.filter((chat: chatHistoryType) =>
       (
-        chat.users[0].first_name.toLowerCase() +
+        chat.users[0]?.first_name?.toLowerCase() +
         " " +
-        chat.users[0].last_name.toLowerCase()
+        chat.users[0]?.last_name?.toLowerCase()
       ).includes((historySearchRef.current?.value ?? "").toLowerCase())
     );
 
@@ -43,6 +43,11 @@ export default function ChatHistory({}: Props) {
   useEffect(() => {
     if (historyQuery.data) {
       setHistoryUser(searchFilter());
+      let roomId = localStorage.getItem("roomId");
+      if (roomId === null) {
+        localStorage.setItem("roomId", historyQuery.data[0].room.id);
+        go(`/main/${historyQuery.data[0].room.id}`);
+      }
     }
   }, [historyQuery.data]);
   return (
@@ -138,7 +143,11 @@ export default function ChatHistory({}: Props) {
                 <RecentChat
                   img={chat?.users[0]?.profile}
                   name={
-                    chat?.users[0]?.first_name + " " + chat?.users[0]?.last_name
+                    chat?.users[0]?.first_name === undefined
+                      ? "Account Deleted"
+                      : chat?.users[0]?.first_name +
+                        " " +
+                        chat?.users[0]?.last_name
                   }
                   msgQuantity={chat.quantity}
                   message={chat.message}

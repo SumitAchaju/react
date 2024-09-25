@@ -13,9 +13,9 @@ import MainChat from "./pages/MainChat";
 import "swiper/css";
 import { useEffect } from "react";
 import useThemeDetector from "./hooks/themeDetector";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "react-hot-toast";
 import RedirectRoute from "./pages/RedirectRoute";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,7 +30,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path="/main/:roomId" element={<ProtectedRoute />}>
-        <Route index element={<MainChat />}></Route>
+        <Route index element={<MainChat />} />
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
@@ -58,7 +58,7 @@ function App() {
         <RouterProvider router={router} />
         <Toaster />
       </AuthProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
+      <ReactQueryDevtools />
     </QueryClientProvider>
   );
 }

@@ -26,7 +26,11 @@ export default function ProfilePic({
     >
       <img
         className="rounded-full w-full h-full object-cover"
-        src={image}
+        src={
+          image === undefined
+            ? "/src/assets/profile/default_profile.jpg"
+            : image
+        }
         alt="profile"
       />
       {active ? (

@@ -25,7 +25,6 @@ export default function Login({}: Props) {
       }
       localStorage.setItem("access", res.data.access_token);
       localStorage.setItem("refresh", res.data.refresh_token);
-      localStorage.setItem("roomId", "new");
       context?.setLoginStatus(true);
 
       navigate("/");
