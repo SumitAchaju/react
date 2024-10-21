@@ -46,7 +46,10 @@ export default function OnlineUser({ users }: Props) {
               Online Friends
             </h2>
           </div>
-          <form className="relative flex items-center gap-5 px-[50px]">
+          <form
+            onSubmit={(e) => e.preventDefault()}
+            className="relative flex items-center gap-5 px-[50px]"
+          >
             <input
               type="text"
               placeholder="Search Chats..."

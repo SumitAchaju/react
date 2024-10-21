@@ -66,8 +66,8 @@ export default function ChatInfo({ friendUsers, setIsChatInfoOpen }: Props) {
         <div className="text-center">
           <div
             className={
-              "rounded-[50%] bg-main me-auto flex items-center justify-center mb-2 w-[50px] h-[50px] cursor-pointer " +
-              (isBlocked ? "bg-red-color" : "")
+              "rounded-[50%] me-auto flex items-center justify-center mb-2 w-[50px] h-[50px] cursor-pointer " +
+              (isBlocked ? "bg-red-color" : "bg-main")
             }
             onClick={() => {
               notifyPromise({

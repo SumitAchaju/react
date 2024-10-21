@@ -146,6 +146,7 @@ export default function EditProfile({}: Props) {
           />
           <Input
             name="contact_number"
+            disabled
             labelname="Contact Number"
             defaultValue={`+${userData?.contact_number_country_code} ${userData?.contact_number}`}
             required
@@ -178,10 +179,10 @@ const checkFormDataChange = (
   if (userData === undefined) return changed;
   for (let [key, value] of formData.entries()) {
     if (key === "contact_number") {
-      return;
+      break;
     }
     if (key === "email" && String(value).toLocaleLowerCase() === userData.email)
-      return;
+      continue;
     if (userData[key as keyof userType] !== value) {
       changed = true;
       break;

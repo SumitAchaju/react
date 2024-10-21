@@ -92,7 +92,7 @@ export const notifyMsg = (msg: string, senderUser: userType | undefined) => {
   toast.custom(
     () => (
       <div
-        className={`max-w-[350px] w-full bg-main rounded-lg pointer-events-auto flex`}
+        className={`max-w-[350px] w-full bg-main rounded-lg pointer-events-auto flex drop-shadow-xl`}
       >
         <div className="flex-1 w-0 p-4">
           <div className="flex items-start">

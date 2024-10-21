@@ -34,7 +34,7 @@ function MuteFriend() {
     <div className="flex items-center justify-between">
       <div className="flex gap-2 items-center">
         <ProfilePic
-          image="/src/assets/png/profile.png"
+          image="/src/assets/profile/default_profile.jpg"
           circle={false}
           active={false}
           size={40}

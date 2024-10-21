@@ -1,7 +1,7 @@
 import { HTMLAttributes } from "react";
 
 type Props = {
-  image: string | undefined;
+  image?: string;
   size?: number;
   active?: boolean;
   circle?: boolean;

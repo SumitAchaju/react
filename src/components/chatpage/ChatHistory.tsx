@@ -40,6 +40,7 @@ export default function ChatHistory({}: Props) {
   const handleChatSearch = useDebouncedCallback(() => {
     setHistoryUser(searchFilter());
   }, 1000);
+
   useEffect(() => {
     if (historyQuery.data) {
       setHistoryUser(searchFilter());
@@ -111,7 +112,10 @@ export default function ChatHistory({}: Props) {
           ) : (
             ""
           )}
-          <form className="relative mx-5 mt-1">
+          <form
+            onSubmit={(e) => e.preventDefault()}
+            className="relative mx-5 mt-1"
+          >
             <input
               type="text"
               placeholder="Search Chats..."
