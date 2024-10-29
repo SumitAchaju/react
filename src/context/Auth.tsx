@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useState } from "react";
+import React, { ReactNode, createContext, useState } from "react";
 import useAxios from "../hooks/useAxios";
 import { userType } from "../types/fetchTypes";
 import { useQuery } from "@tanstack/react-query";
@@ -19,7 +19,7 @@ export default AuthContext;
 export function AuthProvider({ children }: Props) {
   const api = useAxios();
   const [loginStatus, setLoginStatus] = useState(
-    localStorage.getItem("access") ? true : false
+    !!localStorage.getItem("access")
   );
 
   const { data } = useQuery<userType>({

@@ -60,7 +60,7 @@ export default function MainChatBox({}: Props) {
 
   useUpdateEffect(() => {
     if (inView && chatMessages.hasNextPage) {
-      chatMessages.fetchNextPage();
+      chatMessages.fetchNextPage().then((res) => console.log(res));
     }
   }, [inView]);
 
@@ -74,6 +74,8 @@ export default function MainChatBox({}: Props) {
   }, [roomId, roomQuery.isFetching]);
 
   const { isShowBottom, handleScroll } = useBottomScroll();
+
+  console.log(roomQuery.data?.is_active);
 
   return (
     <div className="bg-main grow h-full flex ">

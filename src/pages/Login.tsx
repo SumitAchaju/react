@@ -11,7 +11,7 @@ export default function Login({}: Props) {
   const navigate = useNavigate();
   const api = useAxios();
 
-  function handleLogin(e: FormEvent<HTMLFormElement>) {
+  async function handleLogin(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = {
       username: e.currentTarget.username.value,
@@ -20,7 +20,7 @@ export default function Login({}: Props) {
     const login = async () => {
       const res = await api.post("/auth/token/", formData);
       if (res.status !== 200) {
-        Promise.reject(res);
+        await Promise.reject(res);
         return;
       }
       localStorage.setItem("access", res.data.access_token);
@@ -29,7 +29,7 @@ export default function Login({}: Props) {
 
       navigate("/");
     };
-    notifyPromise({
+    await notifyPromise({
       promise: login(),
       msg: "Login Success",
       loading: "Logging in...",

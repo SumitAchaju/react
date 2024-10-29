@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useThrottledCallback } from "use-debounce";
 
 export default function useBottomScroll() {

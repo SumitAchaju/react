@@ -7,26 +7,26 @@ export default function useShowMsgStatus(
 ) {
   const context = useContext(AuthContext);
 
-  let copiedMsgData: processMsgType[] = [];
-
-  for (const msg of structuredClone(msgData)?.reverse() ?? []) {
-    if (
-      msg.message[msg.message.length - 1].status === "seen" &&
-      context?.user?.id === msg.sender_id
-    ) {
-      copiedMsgData.push(msg);
-
-      break;
-    }
-    if (msg.sender_id === context?.user?.id) {
-      copiedMsgData.push(msg);
-    }
-  }
-
-  //reverse the array for latest msg
-  copiedMsgData.forEach((msg) => msg.message.reverse());
-
   const lastStatusMsg = useMemo(() => {
+    let copiedMsgData: processMsgType[] = [];
+
+    for (const msg of structuredClone(msgData)?.reverse() ?? []) {
+      if (
+        msg.message[msg.message.length - 1].status === "seen" &&
+        context?.user?.id === msg.sender_id
+      ) {
+        copiedMsgData.push(msg);
+
+        break;
+      }
+      if (msg.sender_id === context?.user?.id) {
+        copiedMsgData.push(msg);
+      }
+    }
+
+    //reverse the array for latest msg
+    copiedMsgData.forEach((msg) => msg.message.reverse());
+
     const lastSeen = copiedMsgData
       .find((msg) => msg.message.find((m) => m.status === "seen") !== undefined)
       ?.message.find((m) => m.status === "seen");
@@ -42,7 +42,7 @@ export default function useShowMsgStatus(
       ?.message.find((m) => m.status === "sent");
 
     return { lastSeen, lastDelivered, lastSent };
-  }, [msgData]);
+  }, [msgData, context?.user?.id]);
 
   return { lastStatusMsg };
 }

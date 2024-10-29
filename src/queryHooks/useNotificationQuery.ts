@@ -1,22 +1,17 @@
-import {
-  InfiniteData,
-  useInfiniteQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import {InfiniteData, useInfiniteQuery, useMutation, useQueryClient,} from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
-import { userType } from "../types/fetchTypes";
+import {userType} from "../types/fetchTypes";
 
 const KEY = "notification";
 const LIMIT = 10;
 
 export default function useNotificationQuery() {
   const api = useAxios();
-  const query = useInfiniteQuery({
+  return useInfiniteQuery({
     queryKey: [KEY],
-    queryFn: async ({ pageParam }): Promise<notificationType[]> => {
+    queryFn: async ({pageParam}): Promise<notificationType[]> => {
       const res = await api.get(
-        `notification?limit=${LIMIT}&offset=${pageParam}`
+          `notification?limit=${LIMIT}&offset=${pageParam}`
       );
       return res.data;
     },
@@ -26,7 +21,6 @@ export default function useNotificationQuery() {
       return lastPageParam + LIMIT;
     },
   });
-  return query;
 }
 
 type notificationMutationType = {

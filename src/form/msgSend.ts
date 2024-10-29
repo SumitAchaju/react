@@ -1,6 +1,7 @@
 import { FormEvent } from "react";
 import newWebsocketMsg from "../utils/websocketMsg";
 import { userType } from "../types/fetchTypes";
+import { excludeFriendsFromUser } from "../utils/extractData";
 
 export default function sendMsg(
   e: FormEvent<HTMLFormElement>,
@@ -23,7 +24,7 @@ export default function sendMsg(
         room_id: roomId,
         sender_id: senderId,
         message_text: msgValue,
-        sender_user: senderUser,
+        sender_user: excludeFriendsFromUser(senderUser),
       })
     )
   );

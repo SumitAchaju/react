@@ -11,11 +11,10 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Signup from "./pages/Signup";
 import MainChat from "./pages/MainChat";
 import "swiper/css";
-import { useEffect } from "react";
-import useThemeDetector from "./hooks/themeDetector";
 import { Toaster } from "react-hot-toast";
 import RedirectRoute from "./pages/RedirectRoute";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ThemeProvider } from "./context/Theme";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,24 +39,14 @@ const router = createBrowserRouter(
 );
 
 function App() {
-  const isDarkTheme = useThemeDetector();
-  useEffect(() => {
-    const theme = localStorage.getItem("theme");
-    if (theme) {
-      document.body.classList.add(
-        theme === "system" ? (isDarkTheme ? "dark" : "light") : theme
-      );
-    } else {
-      localStorage.setItem("theme", "system");
-      document.body.classList.add(isDarkTheme ? "dark" : "light");
-    }
-  }, []);
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <RouterProvider router={router} />
-        <Toaster />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <RouterProvider router={router} />
+          <Toaster />
+        </AuthProvider>
+      </ThemeProvider>
       <ReactQueryDevtools />
     </QueryClientProvider>
   );

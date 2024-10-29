@@ -1,5 +1,5 @@
 import { useSpring, animated, useSpringRef } from "@react-spring/web";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 type Props = {
   state: boolean;

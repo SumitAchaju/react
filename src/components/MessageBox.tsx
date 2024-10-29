@@ -1,4 +1,12 @@
-import { FormEvent, useEffect, useRef, useState, lazy, Suspense } from "react";
+import {
+  FormEvent,
+  useEffect,
+  useRef,
+  useState,
+  lazy,
+  Suspense,
+  useContext,
+} from "react";
 import {
   EmojiIcon,
   GalleryIcon,
@@ -7,10 +15,12 @@ import {
   SendIcon,
 } from "./Icons";
 import { useParams } from "react-router-dom";
+import ThemeContext from "../context/Theme";
 
 const EmojiPicker = lazy(() => import("emoji-picker-react"));
 enum Theme {
   DARK = "dark",
+  LIGHT = "light",
 }
 type Props = {
   isActive: boolean;
@@ -21,6 +31,9 @@ function MessageBox({ isActive, handleMsgSend }: Props) {
   const { roomId } = useParams();
   const iconsDiv = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const themeContext = useContext(ThemeContext);
+
   function handleChangeBox() {
     if (inputRef.current?.value == "") {
       inputRef.current?.classList.remove("ps-[40px]");
@@ -91,7 +104,7 @@ function MessageBox({ isActive, handleMsgSend }: Props) {
       <Suspense
         fallback={
           <div className="!absolute top-0 right-0 -translate-y-full">
-            <p className="text-primary-text">Loading...</p>
+            <p className="text-secondary-text">Loading...</p>
           </div>
         }
       >
@@ -99,7 +112,7 @@ function MessageBox({ isActive, handleMsgSend }: Props) {
           className="!absolute top-0 right-0 -translate-y-full !bg-second"
           open={isEmojiOpen}
           lazyLoadEmojis
-          theme={Theme.DARK}
+          theme={themeContext?.theme === "dark" ? Theme.DARK : Theme.LIGHT}
           onEmojiClick={(emoji) => {
             if (inputRef.current) {
               inputRef.current.value += emoji.emoji;

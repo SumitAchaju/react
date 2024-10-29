@@ -32,7 +32,7 @@ export default function useWebsocket(
 
   useEffect(() => {
     roomSocket.onmessage = (event: MessageEvent<any>) => {
-      const msg = JSON.parse(JSON.parse(event.data));
+      const msg = JSON.parse(event.data);
       handleMsg(msg, roomSocket);
     };
   }, [handleMsg, url]);

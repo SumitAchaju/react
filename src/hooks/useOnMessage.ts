@@ -9,6 +9,7 @@ import {
   websocketNotificationType,
 } from "../types/fetchTypes";
 import { statusChangeWebsocketMsg } from "../utils/websocketMsg";
+import { excludeFriendsFromUser } from "../utils/extractData";
 
 export default function useOnMessage(type: "main" | "room") {
   const { updateHistoryData, updateHistoryDataStatus } =
@@ -36,7 +37,7 @@ export default function useOnMessage(type: "main" | "room") {
               sender_id: msgData.sender_id,
               messages: [msgData],
               status: "delivered",
-              sender_user: context?.user,
+              sender_user: excludeFriendsFromUser(context?.user),
             }),
             reciever_id: msgData.sender_id,
           })

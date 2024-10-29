@@ -21,6 +21,7 @@
     "react-hot-toast": "^2.4.1",
     "react-intersection-observer": "^9.13.0",
     "react-router-dom": "^6.22.2",
+    "react-use-websocket": "^4.10.0",
     "reactjs-popup": "^2.0.6",
     "swiper": "^11.1.5",
     "use-debounce": "^10.0.3"

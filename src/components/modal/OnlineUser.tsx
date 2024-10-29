@@ -52,7 +52,7 @@ export default function OnlineUser({ users }: Props) {
           >
             <input
               type="text"
-              placeholder="Search Chats..."
+              placeholder="Search Online Friends..."
               className="rounded-[10px] block py-[15px] ps-[55px] border border-secondary-text pe-5 w-full text-primary-text placeholder:text-primary-text bg-transparent"
               ref={searchRef}
               onChange={handleSearchChange}

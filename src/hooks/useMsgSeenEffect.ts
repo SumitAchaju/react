@@ -13,14 +13,14 @@ export default function useMsgSeenEffect(
 ) {
   const context = useContext(AuthContext);
   useEffect(() => {
+    if (context?.user?.id === undefined) return;
     if (chatMessages === undefined || !isConnected) return;
 
     const { unSeenMsg, senderIdList } = getMsgStatus(
       chatMessages?.pages.flat(),
       "seen"
     );
-    if (senderIdList.size === 1 && senderIdList.has(context?.user?.id || 0))
-      return;
+    if (senderIdList.size === 1 && senderIdList.has(context?.user?.id)) return;
     if (unSeenMsg.length === 0) return;
     if (roomSocket.readyState === roomSocket.CONNECTING) return;
     console.log("seen fire");

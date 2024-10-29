@@ -9,7 +9,7 @@ export default function Input({ type = "text", ...props }: Props) {
     <div className={"w-full " + props.className}>
       {props.labelname ? (
         <label
-          className="text-icon-color block mb-2 text-[14px]"
+          className="text-primary-text block mb-2 text-[14px]"
           htmlFor={props.name}
         >
           {props.labelname}

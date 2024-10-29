@@ -4,7 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { extractDataForm } from "../utils/extractData";
 import { userType } from "../types/fetchTypes";
 import useAxios from "../hooks/useAxios";
-import { notifyPromise } from "../components/toast/MsgToast";
+import notify, { notifyPromise } from "../components/toast/MsgToast";
 
 type Props = {};
 
@@ -13,13 +13,19 @@ export default function Signup({}: Props) {
   const navigate = useNavigate();
   const api = useAxios();
 
-  function handleSignUp(e: FormEvent<HTMLFormElement>) {
+  async function handleSignUp(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     let data: userType = extractDataForm(e);
+    if (
+      e.currentTarget.password.value !== e.currentTarget.confirm_password.value
+    ) {
+      notify("dumb", "Password not match");
+      return;
+    }
     const register = async () => {
       const res = await api.post("/account/createuser", data);
       if (res.status !== 201) {
-        Promise.reject(res);
+        await Promise.reject(res);
         return;
       }
       localStorage.setItem("access", res.data.access_token);
@@ -27,7 +33,7 @@ export default function Signup({}: Props) {
       context?.setLoginStatus(true);
       navigate("/");
     };
-    notifyPromise({
+    await notifyPromise({
       promise: register(),
       msg: "Signup Success",
       loading: "Signing up...",
@@ -172,15 +178,15 @@ export default function Signup({}: Props) {
               <div className="my-5">
                 <label
                   className="block font-semibold mb-2 text-xl text-primary-text"
-                  htmlFor="superpass"
+                  htmlFor="confirmpass"
                 >
-                  Super Password:
+                  Confirm Password:
                 </label>
                 <input
                   className="p-4 text-xl block w-full bg-main text-primary-text border-2 border-icon-color rounded-xl"
                   type="password"
-                  name="superuser_pass"
-                  id="superpass"
+                  name="confirm_password"
+                  id="confirmpass"
                 />
               </div>
               <div className="text-center mt-14">

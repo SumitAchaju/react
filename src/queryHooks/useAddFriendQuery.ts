@@ -1,10 +1,6 @@
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import {useInfiniteQuery, useMutation, useQueryClient,} from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
-import { userType } from "../types/fetchTypes";
+import {userType} from "../types/fetchTypes";
 
 const KEY = "addFriend";
 const LIMIT = 10;
@@ -19,12 +15,12 @@ export type searchFriendTypes = Omit<
 export default function useAddFriendQuery(type: string, search: string) {
   const api = useAxios();
 
-  const query = useInfiniteQuery({
+  return useInfiniteQuery({
     queryKey: [KEY, type, search],
-    queryFn: async ({ queryKey, pageParam }): Promise<searchFriendTypes[]> => {
+    queryFn: async ({queryKey, pageParam}): Promise<searchFriendTypes[]> => {
       const [_, type, search] = queryKey;
       const fetch = await api.get(
-        `/account/search?type=${type}&search=${search}&limit=${LIMIT}&offset=${pageParam}`
+          `/account/search?search_type=${type}&search=${search}&limit=${LIMIT}&offset=${pageParam}`
       );
       return fetch.data;
     },
@@ -33,20 +29,18 @@ export default function useAddFriendQuery(type: string, search: string) {
       if (lastPage.length < 10) return undefined;
       return lastPageParam + LIMIT;
     },
-    staleTime: 1 * 60 * 1000,
+    staleTime: 60 * 1000,
     retry: 0,
   });
-
-  return query;
 }
 
 export function useAddFriendMutation() {
   const api = useAxios();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
+  return useMutation({
     mutationKey: [KEY, "mutation"],
-    mutationFn: async ({ id, type }: { id: number; type: string }) => {
+    mutationFn: async ({id, type}: { id: number; type: string }) => {
       switch (type) {
         case "Unfriend":
           await api.get(`/account/unfriend/${id}`);
@@ -66,10 +60,8 @@ export function useAddFriendMutation() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [KEY] });
-      queryClient.invalidateQueries({ queryKey: ["getUser"] });
+      queryClient.invalidateQueries({queryKey: [KEY]});
+      queryClient.invalidateQueries({queryKey: ["getUser"]});
     },
   });
-
-  return mutation;
 }

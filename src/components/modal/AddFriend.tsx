@@ -92,7 +92,7 @@ const AddFriendModal = () => {
           ref={inputRef}
           type="text"
           name="searchInput"
-          placeholder="Search Chats..."
+          placeholder="Search People..."
           className="rounded-[10px] block py-[15px] ps-[55px] border border-secondary-text pe-5 w-full text-primary-text placeholder:text-primary-text bg-transparent"
         />
         <div className="absolute top-1/2 -translate-y-1/2 left-[75px]">

@@ -22,13 +22,13 @@ export default function useAxios() {
 
       if (checkTokenExpire(token)) {
         const newToken = await getRefreshToken(localStorage.getItem("refresh"));
-        if (newToken === "token expired") {
+        if (newToken.status !== 200) {
           context?.setLoginStatus(false);
           return config;
         }
-        localStorage.setItem("access", newToken.access_token);
-        localStorage.setItem("refresh", newToken.refresh_token);
-        token = newToken.access_token;
+        localStorage.setItem("access", newToken.data.access_token);
+        localStorage.setItem("refresh", newToken.data.refresh_token);
+        token = newToken.data.access_token;
       }
 
       config.headers.Authorization = `Bearer ${token}`;
@@ -40,24 +40,16 @@ export default function useAxios() {
 }
 
 function checkTokenExpire(token: string | null) {
-  if (token === null) return;
+  if (token === null) return false;
   const decodedToken = jwtDecode(token);
   const currentDate = new Date();
-  if (decodedToken.exp !== undefined) {
-    return true ? decodedToken.exp * 1000 < currentDate.getTime() : false;
-  } else {
-    false;
-  }
+  return decodedToken.exp !== undefined ? decodedToken.exp * 1000 < currentDate.getTime(): false;
 }
 
 async function getRefreshToken(refreshToken: string | null) {
-  const token = await axios.post(BaseUrl + "/auth/token/refresh/", {
+  return await axios.post(BaseUrl + "/auth/token/refresh/", {
     token: refreshToken,
   });
-  if (token.status !== 200) {
-    return "token expired";
-  }
-  return token.data;
 }
 
 export interface AxiosError<T = any, D = any> extends Error {

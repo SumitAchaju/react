@@ -42,6 +42,7 @@ export default function RecentChat({
                 : "text-primary-text"
             } font-normal text-[15px] text-ellipsis max-w-[170px] whitespace-nowrap overflow-hidden`}
           >
+            {context?.user?.id === msgData.sender_id ? "You: " : ""}{" "}
             {msgData.message_text}
           </p>
         </div>

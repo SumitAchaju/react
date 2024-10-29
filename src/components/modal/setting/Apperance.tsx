@@ -1,30 +1,37 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Switch from "../../Switch";
 import useThemeDetector from "../../../hooks/themeDetector";
+import ThemeContext, {
+  themeType,
+  systemThemeType,
+} from "../../../context/Theme";
 
 type Props = {};
 
-type theme = "system" | "dark" | "light";
-
 export default function Apperance({}: Props) {
-  const [activeState, setActiveState] = useState<theme>(
-    () => (localStorage.getItem("theme") as theme) || "system"
+  const [activeState, setActiveState] = useState<systemThemeType>(
+    () => (localStorage.getItem("theme") as systemThemeType) || "system"
   );
+  const themeContext = useContext(ThemeContext);
   const isDarkSystemTheme = useThemeDetector();
 
-  function activateSystemTheme() {
-    setActiveState("system");
-    document.body.classList.remove("dark", "light");
-    document.body.classList.add(isDarkSystemTheme ? "dark" : "light");
-    localStorage.setItem("theme", "system");
+  function handleThemeChange(theme: systemThemeType) {
+    const systemTheme = isDarkSystemTheme ? "dark" : "light";
+    if (theme == "system") {
+      activateTheme("system", systemTheme);
+      return;
+    }
+    activateTheme(theme, theme);
   }
 
-  function activateTheme(theme: theme) {
+  const activateTheme = (theme: systemThemeType, mainTheme: themeType) => {
     setActiveState(theme);
+    themeContext?.setTheme(mainTheme);
     document.body.classList.remove("dark", "light");
-    document.body.classList.add(theme);
+    document.body.classList.add(mainTheme);
     localStorage.setItem("theme", theme);
-  }
+  };
+
   return (
     <div className="flex flex-col gap-5 px-5">
       <div>
@@ -37,7 +44,7 @@ export default function Apperance({}: Props) {
             <Switch
               state={activeState == "system" && true}
               disable={activeState == "system" && true}
-              onClick={() => activateSystemTheme()}
+              onClick={() => handleThemeChange("system")}
             />
           </div>
           <div className="flex items-center justify-between">
@@ -45,7 +52,7 @@ export default function Apperance({}: Props) {
             <Switch
               state={activeState == "dark" && true}
               disable={activeState == "dark" && true}
-              onClick={() => activateTheme("dark")}
+              onClick={() => handleThemeChange("dark")}
             />
           </div>
           <div className="flex items-center justify-between">
@@ -53,7 +60,7 @@ export default function Apperance({}: Props) {
             <Switch
               state={activeState == "light" && true}
               disable={activeState == "light" && true}
-              onClick={() => activateTheme("light")}
+              onClick={() => handleThemeChange("light")}
             />
           </div>
         </div>
