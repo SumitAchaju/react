@@ -15,10 +15,8 @@ import { checkTimeDiff, formatedDate } from "../../utils/processDate";
 import useRoomFriendQuery from "../../queryHooks/useRoomFriendQuery";
 import useMsgQuery from "../../queryHooks/useMsgQuery";
 import Spinner from "../Spinner";
-import useWebsocket from "../../hooks/useWebsocket";
 import useShowMsgStatus from "../../hooks/useShowMsgStatus";
 import { useInView } from "react-intersection-observer";
-import useOnMessage from "../../hooks/useOnMessage";
 import useMsgSeenEffect from "../../hooks/useMsgSeenEffect";
 import useScrollEffect from "../../hooks/useScrollEffect";
 import sendMsg from "../../form/msgSend";
@@ -26,6 +24,8 @@ import { useUpdateEffect } from "../../hooks/useUpdateEffect";
 import useRoomQuery from "../../queryHooks/useRoomQuery";
 import ChatInfo from "./ChatInfo";
 import useBottomScroll from "../../hooks/useBottomScroll";
+import useNewWebsocket from "../../hooks/useNewWebsocket";
+import useOnMessageRoom from "../../hooks/useOnMessageRoom";
 
 type Props = {};
 
@@ -44,17 +44,19 @@ export default function MainChatBox({}: Props) {
 
   const { lastStatusMsg } = useShowMsgStatus(chatMessages.orderedChatMessages);
 
-  const { onMessage } = useOnMessage("room");
-  const { roomSocket, isConnected } = useWebsocket(
-    `/${roomId}`,
-    (msg, socket) => {
-      if (msg.msg_type !== "notification") {
-        onMessage(msg, socket);
-      }
-    }
-  );
+  const handleRoomMessage = useOnMessageRoom();
+  const { sendJsonMessage, isConnected, readyState } = useNewWebsocket({
+    url: `/${roomId}`,
+    onMessage: handleRoomMessage.onMessage,
+  });
 
-  useMsgSeenEffect(chatMessages.data, isConnected, roomSocket, roomId);
+  useMsgSeenEffect(
+    chatMessages.data,
+    isConnected,
+    sendJsonMessage,
+    readyState,
+    roomId
+  );
 
   useScrollEffect(chatMessages, msgDivRef);
 
@@ -74,8 +76,6 @@ export default function MainChatBox({}: Props) {
   }, [roomId, roomQuery.isFetching]);
 
   const { isShowBottom, handleScroll } = useBottomScroll();
-
-  console.log(roomQuery.data?.is_active);
 
   return (
     <div className="bg-main grow h-full flex ">
@@ -204,7 +204,7 @@ export default function MainChatBox({}: Props) {
           <MessageBox
             isActive={roomQuery.data?.is_active}
             handleMsgSend={(e) =>
-              sendMsg(e, roomSocket, roomId, context?.user?.id, context?.user)
+              sendMsg(e, sendJsonMessage, roomId, context?.user)
             }
           />
         </div>

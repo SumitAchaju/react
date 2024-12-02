@@ -1,33 +1,30 @@
 import { userType } from "../types/fetchTypes";
+import { excludeFriendsFromUser } from "./extractData";
 import { processMsgType } from "./processMsg";
 
 export type newWebsocketMsgType = {
   room_id: string | undefined;
-  sender_id: number | undefined;
   message_text: string;
   sender_user: userType | undefined;
 };
 
 export default function newWebsocketMsg({
   room_id,
-  sender_id,
   message_text,
   sender_user,
 }: newWebsocketMsgType) {
   return {
-    type: "new_msg",
+    event_type: "new_message",
     room_id: room_id,
-    status: "sent",
-    sender_id: sender_id,
-    message_text: message_text,
-    messages: null,
+    data: {
+      message_text: message_text,
+    },
     sender_user: sender_user,
   };
 }
 
 export type statusChangeWebsocketMsgType = {
   room_id: string | undefined;
-  sender_id: number | undefined;
   messages: processMsgType["message"];
   status: "sent" | "delivered" | "seen";
   sender_user: userType | undefined;
@@ -35,18 +32,17 @@ export type statusChangeWebsocketMsgType = {
 
 export function statusChangeWebsocketMsg({
   room_id,
-  sender_id,
   messages,
   status,
   sender_user,
 }: statusChangeWebsocketMsgType) {
   return {
-    type: "change_msg_status",
+    event_type: "change_message_status",
     room_id: room_id,
-    status: status,
-    sender_id: sender_id,
-    message_text: null,
-    messages: messages,
-    sender_user: sender_user,
+    data: {
+      message_id_list: messages.map((msg) => msg.id),
+      status: status,
+    },
+    sender_user: excludeFriendsFromUser(sender_user),
   };
 }

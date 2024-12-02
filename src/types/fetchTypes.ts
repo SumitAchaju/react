@@ -1,5 +1,3 @@
-import { notificationType } from "../queryHooks/useNotificationQuery";
-
 export type msgStatusType = "seen" | "delivered" | "sent";
 export type msgType = "text" | "video" | "image" | "document" | "links";
 
@@ -72,14 +70,40 @@ export type messageType = {
   seen_by: number[];
 };
 
-export type websocketMsgType = {
-  msg_type: "new_msg" | "change_msg_status";
-  msg: messageType[];
-  sender_user: userType | undefined;
+export type websocketResponseType = {
+  event_type: "new_message" | "change_message_status" | "notification";
+  data: messageType[] | notificationType[];
+  sender_user: userType;
 };
 
-export type websocketNotificationType = {
-  msg_type: "notification";
-  msg: notificationType;
-  sender_user: userType | undefined;
+type notificationEnumType =
+  | "friend_request"
+  | "friend_request_accepted"
+  | "friend_request_rejected"
+  | "friend_request_canceled"
+  | "block_friend"
+  | "unblock_friend"
+  | "unfriend";
+
+type friendRequestExtraDataType = {
+  is_active: boolean;
+  is_canceled: boolean;
+  is_accepted: boolean;
+  is_rejected: boolean;
+};
+
+export type notificationType = {
+  id: number;
+  is_read: boolean;
+  created_at: string;
+  read_at: string;
+  notification_type: notificationEnumType;
+  message: string;
+  sender_id: number;
+  receiver_id: number;
+  extra_data: friendRequestExtraDataType;
+  linked_notification_id: number;
+  sender_user?: userType;
+  receiver_user?: userType;
+  linked_notification?: notificationType;
 };

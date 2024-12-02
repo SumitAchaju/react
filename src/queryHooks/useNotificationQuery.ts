@@ -1,17 +1,22 @@
-import {InfiniteData, useInfiniteQuery, useMutation, useQueryClient,} from "@tanstack/react-query";
+import {
+  InfiniteData,
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
-import {userType} from "../types/fetchTypes";
+import { notificationType } from "../types/fetchTypes";
 
-const KEY = "notification";
+export const KEY = "notification";
 const LIMIT = 10;
 
 export default function useNotificationQuery() {
   const api = useAxios();
   return useInfiniteQuery({
     queryKey: [KEY],
-    queryFn: async ({pageParam}): Promise<notificationType[]> => {
+    queryFn: async ({ pageParam }): Promise<notificationType[]> => {
       const res = await api.get(
-          `notification?limit=${LIMIT}&offset=${pageParam}`
+        `notification/?limit=${LIMIT}&offset=${pageParam}`
       );
       return res.data;
     },
@@ -25,7 +30,7 @@ export default function useNotificationQuery() {
 
 type notificationMutationType = {
   id: number;
-  data: { read?: boolean; is_active?: boolean };
+  data: { is_read?: boolean };
 };
 
 export function useNotificationMutation() {
@@ -50,12 +55,10 @@ export function useNotificationMutation() {
               notification.id === id
                 ? {
                     ...notification,
-                    read:
-                      data.read !== undefined ? data.read : notification.read,
-                    is_active:
-                      data.is_active !== undefined
-                        ? data.is_active
-                        : notification.is_active,
+                    is_read:
+                      data.is_read !== undefined
+                        ? data.is_read
+                        : notification.is_read,
                   }
                 : notification
             )
@@ -65,13 +68,16 @@ export function useNotificationMutation() {
       );
       return { previousValue, id, data };
     },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: [KEY] });
+    },
   });
 
   const notificationMarkAllRead = useMutation({
     mutationKey: [KEY, "markAllRead"],
 
     mutationFn: async () => {
-      const res = await api.patch(`/notification/markallread`);
+      const res = await api.patch("/notification/mark/read/all");
       return res.data;
     },
     onMutate: async () => {
@@ -80,18 +86,21 @@ export function useNotificationMutation() {
         [KEY],
         (old: InfiniteData<notificationType[], number>) => ({
           pages: old?.pages.map((page) =>
-            page.map((notification) => ({ ...notification, read: true }))
+            page.map((notification) => ({ ...notification, is_read: true }))
           ),
           pageParams: old?.pageParams,
         })
       );
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: [KEY] });
     },
   });
   const notificationDelete = useMutation({
     mutationKey: [KEY, "delete"],
 
     mutationFn: async (id: number) => {
-      const res = await api.delete(`/notification/${id}`);
+      const res = await api.delete(`/notification/delete/${id}`);
       return res.data;
     },
     onMutate: async (id: number) => {
@@ -102,9 +111,12 @@ export function useNotificationMutation() {
           pages: old?.pages.map((page) =>
             page.filter((notification) => notification.id !== id)
           ),
-          pageParams: old?.pageParams,
+          pageParams: old.pageParams,
         })
       );
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: [KEY] });
     },
   });
 
@@ -112,7 +124,7 @@ export function useNotificationMutation() {
     mutationKey: [KEY, "deleteAll"],
 
     mutationFn: async () => {
-      const res = await api.delete(`/notification/deleteall`);
+      const res = await api.delete("/notification/all/delete");
       return res.data;
     },
     onSettled: () => {
@@ -128,12 +140,12 @@ export function useNotificationMutation() {
         newData?.unshift(notification);
         return {
           pages: [newData, ...old.pages],
-          pageParams: old.pageParams.map((param, i, arr) =>
-            i === arr.length - 1 ? param + 1 : param
-          ),
+          pageParams: old.pageParams,
         };
       }
     );
+
+    queryClient.invalidateQueries({ queryKey: [KEY] });
   };
 
   return {
@@ -144,16 +156,3 @@ export function useNotificationMutation() {
     notificationUpdate,
   };
 }
-
-export type notificationType = {
-  id: number;
-  message: string;
-  read: boolean;
-  created_at: string;
-  title: string;
-  type: string;
-  user: userType;
-  is_active: boolean;
-  request_id?: number;
-  is_canceled?: boolean;
-};

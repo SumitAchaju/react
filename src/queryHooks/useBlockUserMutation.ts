@@ -1,5 +1,6 @@
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
+import { KEY as addFriendQueryKey } from "./useAddFriendQuery";
 
 export default function useBlockUserMutation() {
   const api = useAxios();
@@ -11,7 +12,12 @@ export default function useBlockUserMutation() {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ["getUser"]});
+      queryClient.invalidateQueries({
+        queryKey: ["getUser"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [addFriendQueryKey],
+      });
     },
   });
 }
@@ -26,7 +32,12 @@ export function useUnBlockUserMutation() {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ["getUser"]});
+      queryClient.invalidateQueries({
+        queryKey: ["getUser"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [addFriendQueryKey],
+      });
     },
   });
 }

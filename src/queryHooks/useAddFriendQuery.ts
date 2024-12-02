@@ -1,8 +1,12 @@
-import {useInfiniteQuery, useMutation, useQueryClient,} from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
-import {userType} from "../types/fetchTypes";
+import { userType } from "../types/fetchTypes";
 
-const KEY = "addFriend";
+export const KEY = "addFriend";
 const LIMIT = 10;
 
 export type searchFriendTypes = Omit<
@@ -17,10 +21,10 @@ export default function useAddFriendQuery(type: string, search: string) {
 
   return useInfiniteQuery({
     queryKey: [KEY, type, search],
-    queryFn: async ({queryKey, pageParam}): Promise<searchFriendTypes[]> => {
+    queryFn: async ({ queryKey, pageParam }): Promise<searchFriendTypes[]> => {
       const [_, type, search] = queryKey;
       const fetch = await api.get(
-          `/account/search?search_type=${type}&search=${search}&limit=${LIMIT}&offset=${pageParam}`
+        `/account/search?search_type=${type}&search=${search}&limit=${LIMIT}&offset=${pageParam}`
       );
       return fetch.data;
     },
@@ -40,7 +44,7 @@ export function useAddFriendMutation() {
 
   return useMutation({
     mutationKey: [KEY, "mutation"],
-    mutationFn: async ({id, type}: { id: number; type: string }) => {
+    mutationFn: async ({ id, type }: { id: number; type: string }) => {
       switch (type) {
         case "Unfriend":
           await api.get(`/account/unfriend/${id}`);
@@ -60,8 +64,8 @@ export function useAddFriendMutation() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: [KEY]});
-      queryClient.invalidateQueries({queryKey: ["getUser"]});
+      queryClient.invalidateQueries({ queryKey: [KEY] });
+      queryClient.invalidateQueries({ queryKey: ["getUser"] });
     },
   });
 }

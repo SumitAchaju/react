@@ -1,19 +1,13 @@
 import ChatHistory from "../components/chatpage/ChatHistory";
 import MainChatBox from "../components/chatpage/MainChatBox";
-import useOnMessage from "../hooks/useOnMessage";
-import useWebsocket from "../hooks/useWebsocket";
+import useNewWebsocket from "../hooks/useNewWebsocket";
+import useOnMessageMain from "../hooks/useOnMessageMain";
 
 type Props = {};
 
 export default function MainChat({}: Props) {
-  const { onMessage, onNotification } = useOnMessage("main");
-  useWebsocket("/", (msg, socket) => {
-    if (msg.msg_type === "notification") {
-      onNotification(msg);
-    } else {
-      onMessage(msg, socket);
-    }
-  });
+  const { onMessage } = useOnMessageMain();
+  useNewWebsocket({ url: "/", onMessage: onMessage });
 
   return (
     <div className="flex h-screen">

@@ -2,12 +2,12 @@ import { FormEvent } from "react";
 import newWebsocketMsg from "../utils/websocketMsg";
 import { userType } from "../types/fetchTypes";
 import { excludeFriendsFromUser } from "../utils/extractData";
+import { SendJsonMessage } from "react-use-websocket/dist/lib/types";
 
 export default function sendMsg(
   e: FormEvent<HTMLFormElement>,
-  roomSocket: WebSocket,
+  sendJsonMessage: SendJsonMessage,
   roomId: string | undefined,
-  senderId: number | undefined,
   senderUser: userType | undefined
 ) {
   e.preventDefault();
@@ -18,15 +18,12 @@ export default function sendMsg(
     msg.focus();
     return;
   }
-  roomSocket.send(
-    JSON.stringify(
-      newWebsocketMsg({
-        room_id: roomId,
-        sender_id: senderId,
-        message_text: msgValue,
-        sender_user: excludeFriendsFromUser(senderUser),
-      })
-    )
+  sendJsonMessage(
+    newWebsocketMsg({
+      room_id: roomId,
+      message_text: msgValue,
+      sender_user: excludeFriendsFromUser(senderUser),
+    })
   );
   msg.value = "";
   msg.focus();

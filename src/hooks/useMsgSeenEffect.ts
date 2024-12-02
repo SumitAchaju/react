@@ -4,11 +4,14 @@ import { processMsgType } from "../utils/processMsg";
 import { statusChangeWebsocketMsg } from "../utils/websocketMsg";
 import AuthContext from "../context/Auth";
 import getMsgStatus from "../utils/extractMsgStatus";
+import { SendJsonMessage } from "react-use-websocket/dist/lib/types";
+import { ReadyState } from "react-use-websocket";
 
 export default function useMsgSeenEffect(
   chatMessages: InfiniteData<processMsgType[], unknown> | undefined,
   isConnected: boolean,
-  roomSocket: WebSocket,
+  sendJsonMessage: SendJsonMessage,
+  socketState: ReadyState,
   roomId: string | undefined
 ) {
   const context = useContext(AuthContext);
@@ -22,18 +25,15 @@ export default function useMsgSeenEffect(
     );
     if (senderIdList.size === 1 && senderIdList.has(context?.user?.id)) return;
     if (unSeenMsg.length === 0) return;
-    if (roomSocket.readyState === roomSocket.CONNECTING) return;
+    if (socketState === ReadyState.CONNECTING) return;
     console.log("seen fire");
-    roomSocket.send(
-      JSON.stringify(
-        statusChangeWebsocketMsg({
-          room_id: roomId,
-          sender_id: context?.user?.id,
-          messages: unSeenMsg,
-          status: "seen",
-          sender_user: context?.user,
-        })
-      )
+    sendJsonMessage(
+      statusChangeWebsocketMsg({
+        room_id: roomId,
+        messages: unSeenMsg,
+        status: "seen",
+        sender_user: context?.user,
+      })
     );
   }, [chatMessages, isConnected]);
 }

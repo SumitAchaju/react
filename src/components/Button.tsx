@@ -1,11 +1,15 @@
+import { IconProps } from "./Icons";
+
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   varient: "primary" | "secondary";
-  text: string;
+  text?: string;
   hover?: boolean;
+  Icon?: React.FC<IconProps>;
+  iconSize?: number;
 }
 
 const defaultClass =
-  "px-[25px] py-[10px] font-medium text-[18px] rounded-[15px] border-2 duration-300";
+  "px-[25px] py-[10px] font-medium text-[18px] rounded-[15px] border-2 duration-300 flex gap-1 items-center text-nowrap";
 
 const primaryClass = "bg-red-color border-transparent text-white";
 
@@ -22,6 +26,8 @@ export default function Button({
   varient,
   text,
   hover = true,
+  Icon,
+  iconSize = 25,
   ...buttonProps
 }: Props) {
   const primary = hover ? primaryClass + " " + primaryHover : primaryClass;
@@ -40,7 +46,8 @@ export default function Button({
       }
       onClick={buttonProps.onClick}
     >
-      {text}
+      {Icon && <Icon color="white" size={iconSize} />}
+      {text && text}
     </button>
   );
 }

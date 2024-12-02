@@ -1,53 +1,81 @@
 import Button from "../Button";
 import ProfilePic from "../ProfilePic";
 import MyModal from "./MyModal";
-import { NotificationIcon, TickIcon } from "../Icons";
+import { NotificationIcon, TickIcon, TrashIcon } from "../Icons";
 import { useEffect, useMemo, useState } from "react";
 import useNotificationQuery, {
-  notificationType,
   useNotificationMutation,
 } from "../../queryHooks/useNotificationQuery";
 import { formatedDate } from "../../utils/processDate";
-import { useMutation } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import useAxios from "../../hooks/useAxios";
 import Spinner from "../Spinner";
 import { useInView } from "react-intersection-observer";
 import { AxiosError } from "../../hooks/useAxios";
 import notify, { notifyPromise } from "../toast/MsgToast";
+import { notificationType } from "../../types/fetchTypes";
+import { KEY as NotificationKEY } from "../../queryHooks/useNotificationQuery";
 
 type Props = {};
+
+const acceptMutationKey = "Accept Mutation notification";
 
 export default function Notification({}: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const notificationQuery = useNotificationQuery();
+
+  console.log(notificationQuery.data);
 
   const { inView, ref } = useInView();
 
   const unReadMsg = useMemo(() => {
     return notificationQuery.data?.pages
       .flat()
-      .filter((notification) => !notification.read).length;
+      .filter((notification) => !notification.is_read).length;
   }, [notificationQuery.data]);
 
   const {
     notificationStatusChange,
     notificationMarkAllRead,
     notificationDeleteAll,
+    notificationDelete,
   } = useNotificationMutation();
 
   const api = useAxios();
+  const queryClient = useQueryClient();
 
   const handleAccept = useMutation({
-    mutationKey: ["Accept Mutation notification"],
+    mutationKey: [acceptMutationKey],
     mutationFn: async ({ id }: { id: number; notiId: number }) => {
       const res = await api.get(`/account/add/${id}`);
       return res.data;
     },
-    onSuccess: (_, varibles) => {
+    onSuccess: async (_, varibles) => {
       notificationStatusChange.mutate({
         id: varibles.notiId,
-        data: { is_active: false, read: true },
+        data: { is_read: true },
       });
+      await queryClient.cancelQueries({ queryKey: [NotificationKEY] });
+      queryClient.setQueryData(
+        [NotificationKEY],
+        (old: InfiniteData<notificationType[], number>) => ({
+          pages: old?.pages.map((page) =>
+            page.map((notification) => ({
+              ...notification,
+              extra_data: {
+                ...notification.extra_data,
+                is_active: false,
+                is_accepted: true,
+              },
+            }))
+          ),
+          pageParams: old?.pageParams,
+        })
+      );
     },
     onError: (error: AxiosError) => {
       console.log(error.response?.data.detail);
@@ -133,7 +161,7 @@ export default function Notification({}: Props) {
                 onClick={() => {
                   notifyPromise({
                     promise: handleAccept.mutateAsync({
-                      id: notification?.user.id || 0,
+                      id: notification?.sender_id || 0,
                       notiId: notification.id,
                     }),
                     msg: "Request accepted",
@@ -147,6 +175,8 @@ export default function Notification({}: Props) {
                     : undefined
                 }
                 isMutating={handleAccept.isPending}
+                notificationStatusChange={notificationStatusChange}
+                notificationDelete={notificationDelete}
               />
             ))}
             {/* This is the loading spinner */}
@@ -166,45 +196,84 @@ type NotificationItemProps = notificationType & {
   onClick: () => void;
   inViewRef: ((node?: Element | null) => void) | undefined;
   isMutating: boolean;
+  notificationStatusChange: ReturnType<
+    typeof useNotificationMutation
+  >["notificationStatusChange"];
+  notificationDelete: ReturnType<
+    typeof useNotificationMutation
+  >["notificationDelete"];
 };
 
 function NotificationItem({
   onClick,
   inViewRef,
   isMutating,
+  notificationStatusChange,
+  notificationDelete,
   ...props
 }: NotificationItemProps) {
   return (
     <div ref={inViewRef} className="flex justify-between items-center">
       <div className="flex gap-5 items-center">
-        <ProfilePic size={60} image={props.user.profile} />
+        <ProfilePic size={60} image={props.sender_user?.profile} />
         <div className="flex flex-col gap-1">
           <p className="text-primary-text font-medium">{props.message}</p>
           <div className="flex items-center gap-5">
             <span className="block text-secondary-text text-[14px]">
               {formatedDate(props.created_at)}
             </span>
-            {props.read ? <TickIcon color="var(--active_green_color)" /> : null}
+            {props.is_read ? (
+              <TickIcon color="var(--active_green_color)" />
+            ) : null}
           </div>
         </div>
       </div>
-      <Button
-        varient="secondary"
-        text={
-          props.is_canceled
-            ? "Canceled"
-            : props.is_active
-            ? "Accept"
-            : "Accepted"
-        }
-        onClick={
-          props.is_canceled
-            ? () => notify("error", "Request is canceled")
-            : props.is_active && !isMutating
-            ? onClick
-            : () => {}
-        }
-      />
+      <div className="flex gap-5">
+        <Button
+          varient="secondary"
+          text={
+            props.notification_type === "friend_request"
+              ? props.extra_data.is_active
+                ? "Accept"
+                : props.extra_data.is_canceled
+                ? "Canceled"
+                : props.extra_data.is_rejected
+                ? "Rejected"
+                : "Accepted"
+              : "Mark Read"
+          }
+          onClick={
+            props.notification_type === "friend_request" &&
+            !isMutating &&
+            props.extra_data.is_active
+              ? onClick
+              : props.is_read
+              ? () => notify("info", "Notification already read")
+              : () =>
+                  notifyPromise({
+                    promise: notificationStatusChange.mutateAsync({
+                      id: props.id,
+                      data: { is_read: true },
+                    }),
+                    msg: "Notification marked as read",
+                    loading: "Reading...",
+                  })
+          }
+        />
+        <Button
+          varient="primary"
+          Icon={TrashIcon}
+          hover={false}
+          className="!p-2"
+          onClick={() =>
+            notifyPromise({
+              promise: notificationDelete.mutateAsync(props.id),
+              msg: "Notification deleted",
+              loading: "Deleting...",
+            })
+          }
+        />
+      </div>
     </div>
   );
 }
