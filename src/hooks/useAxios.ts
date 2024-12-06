@@ -7,6 +7,9 @@ import AuthContext from "../context/Auth";
 
 const BaseUrl = "http://localhost";
 
+let isTokenRefreshing = false;
+let newTokenPromise: Promise<AxiosResponse<any, any>> | null = null;
+
 export default function useAxios() {
   const context = useContext(AuthContext);
   const instance = axios.create({
@@ -20,15 +23,37 @@ export default function useAxios() {
     instance.interceptors.request.use(async (config) => {
       let token = localStorage.getItem("access");
 
-      if (checkTokenExpire(token)) {
-        const newToken = await getRefreshToken(localStorage.getItem("refresh"));
-        if (newToken.status !== 200) {
-          context?.setLoginStatus(false);
-          return config;
+      if (checkTokenExpire(token) && !isTokenRefreshing) {
+        isTokenRefreshing = true;
+        newTokenPromise = getRefreshToken()
+          .then((newToken) => {
+            localStorage.setItem("access", newToken.data.access_token);
+            localStorage.setItem("refresh", newToken.data.refresh_token);
+            isTokenRefreshing = false;
+            newTokenPromise = null;
+            return newToken;
+          })
+          .catch((error) => {
+            context?.setLoginStatus(false);
+            isTokenRefreshing = false;
+            newTokenPromise = null;
+            localStorage.removeItem("access");
+            localStorage.removeItem("refresh");
+            localStorage.removeItem("roomId");
+            return error;
+          });
+      }
+
+      // If token is refreshing, wait for the new token
+      if (isTokenRefreshing && newTokenPromise !== null) {
+        try {
+          const newToken = await newTokenPromise;
+          token = newToken.data.access_token;
+        } catch (error) {
+          const controller = new AbortController();
+          config.signal = controller.signal;
+          controller.abort();
         }
-        localStorage.setItem("access", newToken.data.access_token);
-        localStorage.setItem("refresh", newToken.data.refresh_token);
-        token = newToken.data.access_token;
       }
 
       config.headers.Authorization = `Bearer ${token}`;
@@ -43,10 +68,13 @@ function checkTokenExpire(token: string | null) {
   if (token === null) return false;
   const decodedToken = jwtDecode(token);
   const currentDate = new Date();
-  return decodedToken.exp !== undefined ? decodedToken.exp * 1000 < currentDate.getTime(): false;
+  return decodedToken.exp !== undefined
+    ? decodedToken.exp * 1000 < currentDate.getTime()
+    : false;
 }
 
-async function getRefreshToken(refreshToken: string | null) {
+async function getRefreshToken() {
+  const refreshToken = localStorage.getItem("refresh");
   return await axios.post(BaseUrl + "/auth/token/refresh/", {
     token: refreshToken,
   });

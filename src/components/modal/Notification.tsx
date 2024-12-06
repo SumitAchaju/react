@@ -28,8 +28,6 @@ export default function Notification({}: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const notificationQuery = useNotificationQuery();
 
-  console.log(notificationQuery.data);
-
   const { inView, ref } = useInView();
 
   const unReadMsg = useMemo(() => {

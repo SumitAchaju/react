@@ -28,6 +28,9 @@ export default function useNewWebsocket({
       socket.sendMessage(token ? token : "invalid");
       if (token) setIsConnected(true);
     },
+    retryOnError: true,
+    reconnectAttempts: 3,
+    reconnectInterval: 3000,
 
     ...options,
   });
@@ -35,6 +38,7 @@ export default function useNewWebsocket({
   useUpdateEffect(() => {
     if (socket.lastJsonMessage === null) return;
     onMessage(socket.lastJsonMessage, socket.sendJsonMessage);
+    return () => socket.getWebSocket()?.close();
   }, [socket.lastJsonMessage]);
 
   return { ...socket, isConnected };

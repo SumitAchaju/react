@@ -44,11 +44,6 @@ export default function ChatHistory({}: Props) {
   useEffect(() => {
     if (historyQuery.data) {
       setHistoryUser(searchFilter());
-      let roomId = localStorage.getItem("roomId");
-      if (roomId === null) {
-        localStorage.setItem("roomId", historyQuery.data[0]?.room.id ?? null);
-        go(`/main/${historyQuery.data[0]?.room.id}`);
-      }
     }
   }, [historyQuery.data]);
   return (
