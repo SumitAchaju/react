@@ -21,6 +21,8 @@ export default function useNewWebsocket({
   options = {},
 }: Props) {
   const [isConnected, setIsConnected] = useState(false);
+  const [reconnectAttempts, setReconnectAttempts] = useState(0);
+  const maxRetries = 3;
 
   const socket = useWebSocket<websocketResponseType>(BaseWebsocketUrl + url, {
     onOpen: () => {
@@ -29,16 +31,27 @@ export default function useNewWebsocket({
       if (token) setIsConnected(true);
     },
     retryOnError: true,
+    shouldReconnect: (closeEvent) => {
+      if (reconnectAttempts > maxRetries) {
+        setReconnectAttempts(0);
+        return false;
+      }
+      if (closeEvent.reason === "Invalid room id") return false;
+      setReconnectAttempts((prev) => prev + 1);
+      return true;
+    },
     reconnectAttempts: 3,
-    reconnectInterval: 3000,
-
+    reconnectInterval: (attemptNumber) =>
+      Math.min(Math.pow(2, attemptNumber) * 1000, 10000),
+    onReconnectStop: () => {
+      setIsConnected(false);
+    },
     ...options,
   });
 
   useUpdateEffect(() => {
     if (socket.lastJsonMessage === null) return;
     onMessage(socket.lastJsonMessage, socket.sendJsonMessage);
-    return () => socket.getWebSocket()?.close();
   }, [socket.lastJsonMessage]);
 
   return { ...socket, isConnected };

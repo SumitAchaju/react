@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
 import { KEY as addFriendQueryKey } from "./useAddFriendQuery";
+import { KEY as getRoomFriendQueryKey } from "./useRoomQuery";
 
 export default function useBlockUserMutation() {
   const api = useAxios();
@@ -17,6 +18,9 @@ export default function useBlockUserMutation() {
       });
       queryClient.invalidateQueries({
         queryKey: [addFriendQueryKey],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [getRoomFriendQueryKey],
       });
     },
   });
@@ -37,6 +41,9 @@ export function useUnBlockUserMutation() {
       });
       queryClient.invalidateQueries({
         queryKey: [addFriendQueryKey],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [getRoomFriendQueryKey],
       });
     },
   });
